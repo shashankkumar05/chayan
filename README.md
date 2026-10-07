@@ -5,6 +5,20 @@
 
 Chayan (Hindi for "selection") is a full-stack web app. You upload a PDF resume and paste a job description, and it shows how well they match: a match score, an ATS score with a breakdown, the skills you are missing, and prioritized tips to improve. Every analysis is saved in a history dashboard.
 
+## Screenshots
+
+**Login**
+
+![Login page](docs/screenshots/01login-page.png)
+
+**Dashboard result**
+
+![Dashboard result](docs/screenshots/02Dashboard-page.png)
+
+**Analysis history**
+
+![Analysis history](docs/screenshots/03-analysis-page.png)
+
 ## The problem
 Many resumes are rejected by an Applicant Tracking System (ATS) before a human reads them, and candidates rarely know why. Chayan shows what the ATS is likely to see, so you can fix your resume before you apply.
 
