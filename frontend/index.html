@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1"/>
 <title>Chayan - Analyze. Match. Get Selected.</title>
 <link rel="icon" type="image/svg+xml" href="/chayan-logo.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,5 +12,8 @@ body::after{width:480px;height:480px;background:#ec4899;bottom:-140px;right:-100
 #root::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1px);background-size:24px 24px}
 @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,40px)}}
 .confetti{position:absolute;top:-30px;font-size:20px;animation:fall 2.6s ease-in forwards}@keyframes fall{to{transform:translateY(560px) rotate(360deg);opacity:0}}
+/* Mobile fix: grid items may shrink below their content (long file names), and the page never scrolls sideways */
+html,body{max-width:100%;overflow-x:hidden}
+.grid>*{min-width:0}
 </style></head>
 <body><div id="root"></div><script type="module" src="/src/main.jsx"></script></body></html>
