@@ -14,6 +14,7 @@ export const call = async (path, opts = {}, token) => {
     throw new Error("Can't reach the server. Please check your connection and try again.");
   }
   const data = await res.json().catch(() => ({}));
+  if (res.status === 429) throw new Error("Too many requests. Please wait a little and try again.");
   if (!res.ok) throw new Error(pretty(data, res.status));
   return data;
 };

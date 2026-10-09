@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .notify import notify_owner, send_reset_email, send_welcome
+from .throttles import AnalyzeDayThrottle, LoginNameThrottle, ScopedThrottle
 from django.db import transaction
 from rest_framework import generics, status
 from rest_framework.parsers import MultiPartParser
@@ -23,6 +24,8 @@ from .serializers import (AnalysisSerializer, ForgotSerializer, LoginSerializer,
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedThrottle]
+    throttle_scope = "register"
     def perform_create(self, serializer):
         user = serializer.save()
         LoginEvent.objects.create(user=user, event="signup")
@@ -31,6 +34,8 @@ class RegisterView(generics.CreateAPIView):
 
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
+    throttle_classes = [ScopedThrottle, LoginNameThrottle]
+    throttle_scope = "login"
     def post(self, request, *args, **kwargs):
         user = find_user(request.data.get("username"))
         # The app logs a new user in right after signup: same visit, so don't count it twice.
@@ -44,6 +49,8 @@ class LoginView(TokenObtainPairView):
 
 class AnalyzeView(APIView):
     parser_classes = [MultiPartParser]
+    throttle_classes = [ScopedThrottle, AnalyzeDayThrottle]
+    throttle_scope = "analyze"
     def post(self, request):
         pdf, jd = request.FILES.get("resume"), request.data.get("jd_text", "").strip()
         if not pdf or not jd:
@@ -85,6 +92,8 @@ class AnalysisDetail(generics.RetrieveDestroyAPIView):
 class ForgotPasswordView(generics.GenericAPIView):
     serializer_class = ForgotSerializer
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedThrottle]
+    throttle_scope = "forgot"
 
     def post(self, request):
         s = self.get_serializer(data=request.data)
@@ -99,6 +108,8 @@ class ForgotPasswordView(generics.GenericAPIView):
 class ResetPasswordView(generics.GenericAPIView):
     serializer_class = ResetSerializer
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedThrottle]
+    throttle_scope = "reset"
 
     def post(self, request):
         s = self.get_serializer(data=request.data)

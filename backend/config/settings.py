@@ -38,7 +38,16 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": ["analyzer.throttles.AnonThrottle", "rest_framework.throttling.UserRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "120/hour", "user": "1000/hour",
+        "login": "10/min", "login_name": "20/hour",
+        "register": "10/hour", "forgot": "5/hour", "reset": "10/hour",
+        "analyze": "30/hour", "analyze_day": "100/day",
+    },
 }
+# Rate-limit counters live in memory (one server process). They reset when the server restarts.
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 SIMPLE_JWT = {"ACCESS_TOKEN_LIFETIME": timedelta(hours=12), "UPDATE_LAST_LOGIN": True}
 SPECTACULAR_SETTINGS = {"TITLE": "Chayan API", "VERSION": "1.0.0"}
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
