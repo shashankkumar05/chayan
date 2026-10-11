@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import unquote, urlparse
 from datetime import timedelta
 from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +33,14 @@ if os.getenv("DB_ENGINE", "sqlite") == "mysql":
         "NAME": os.getenv("DB_NAME", "resumeiq"), "USER": os.getenv("DB_USER", "root"),
         "PASSWORD": os.getenv("DB_PASSWORD", ""), "HOST": os.getenv("DB_HOST", "127.0.0.1"),
         "PORT": os.getenv("DB_PORT", "3306")}}
+elif os.getenv("DB_ENGINE") == "postgres":
+    # Hosted Postgres (for example Neon): paste its connection string into DATABASE_URL
+    _u = urlparse(os.getenv("DATABASE_URL", ""))
+    DATABASES = {"default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": _u.path.lstrip("/"), "USER": unquote(_u.username or ""),
+        "PASSWORD": unquote(_u.password or ""), "HOST": _u.hostname or "", "PORT": _u.port or 5432,
+        "OPTIONS": {"sslmode": "require"}}}
 else:
     DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3"}}
 REST_FRAMEWORK = {

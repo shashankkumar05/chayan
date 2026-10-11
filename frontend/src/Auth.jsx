@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { call } from "./api.js";
+import { useEffect, useState } from "react";
+import { API, call } from "./api.js";
 import { Wordmark, Footer } from "./Brand.jsx";
 
 const qs = new URLSearchParams(window.location.search);
@@ -69,6 +69,8 @@ export default function Auth({ onToken }) {
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [slow, setSlow] = useState(false);
+  useEffect(() => { fetch(API + "/health").catch(() => {}); }, []); // wakes a sleeping free server early
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const go = (m) => { setMode(m); setErr(""); setMsg(""); };
   const json = (body) => ({ method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -81,6 +83,7 @@ export default function Auth({ onToken }) {
   };
   const submit = async (e) => {
     e.preventDefault(); setBusy(true); setErr(""); setMsg("");
+    const timer = setTimeout(() => setSlow(true), 6000);
     try {
       if (mode === "login") await login(f.ident.trim(), f.password, remember);
       else if (mode === "register") {
@@ -94,7 +97,7 @@ export default function Auth({ onToken }) {
         window.history.replaceState({}, "", window.location.pathname);
         setMode("login"); setF({ ...f, password: "" }); setMsg(d.detail);
       }
-    } catch (ex) { setErr(ex.message); } finally { setBusy(false); }
+    } catch (ex) { setErr(ex.message); } finally { clearTimeout(timer); setSlow(false); setBusy(false); }
   };
 
   const eye = (
@@ -153,6 +156,7 @@ export default function Auth({ onToken }) {
             <button disabled={busy} className="w-full rounded-xl py-3 font-semibold text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 shadow-lg shadow-purple-500/30 hover:scale-[1.01] active:scale-95 transition disabled:opacity-60">
               {busy ? "Please wait..." : BTN[mode]}
             </button>
+            {busy && slow && <p className="mt-3 text-center text-xs text-amber-600">⏳ The free server is waking up. This can take up to a minute...</p>}
             <p className="mt-5 text-center text-sm text-slate-600">
               {mode === "login" && <>Don't have an account? <button type="button" onClick={() => go("register")} className="font-semibold text-indigo-600 hover:underline">Create account</button></>}
               {mode === "register" && <>Already have an account? <button type="button" onClick={() => go("login")} className="font-semibold text-indigo-600 hover:underline">Login</button></>}

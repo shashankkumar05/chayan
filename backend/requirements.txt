@@ -10,3 +10,4 @@ scikit-learn
 python-dotenv
 gunicorn
 whitenoise
+psycopg[binary]>=3.1

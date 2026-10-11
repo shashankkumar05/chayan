@@ -134,3 +134,13 @@ class MeView(APIView):
     def get(self, request):
         u = request.user
         return Response({"name": u.first_name or u.username, "username": u.username, "email": u.email, "joined": u.date_joined})
+
+
+class HealthView(APIView):
+    """Tiny endpoint that does not touch the database. The login page calls it to wake a sleeping free server."""
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = []
+
+    def get(self, request):
+        return Response({"status": "ok"})
