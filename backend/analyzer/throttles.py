@@ -2,9 +2,14 @@ from rest_framework.throttling import AnonRateThrottle, ScopedRateThrottle, Simp
 
 
 def client_ip(request):
-    """Client address. Railway's edge sets X-Real-IP to the connecting client; locally we use the socket address."""
+    """Best guess of the visitor's address behind a hosting proxy (Render, Railway); falls back to the socket address."""
     meta = request.META
-    return (meta.get("HTTP_X_REAL_IP") or meta.get("REMOTE_ADDR") or "unknown").strip()
+    for key in ("HTTP_CF_CONNECTING_IP", "HTTP_X_REAL_IP"):
+        value = (meta.get(key) or "").strip()
+        if value:
+            return value
+    forwarded = (meta.get("HTTP_X_FORWARDED_FOR") or "").split(",")[0].strip()
+    return forwarded or (meta.get("REMOTE_ADDR") or "unknown").strip()
 
 
 class AnonThrottle(AnonRateThrottle):
