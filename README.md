@@ -3,6 +3,8 @@
 **Analyze. Match. Get Selected.**
 *See your resume the way ATS sees it.*
 
+**Live demo:** https://chayan-weld.vercel.app (free hosting, so the first load after a pause can take up to a minute)
+
 Chayan (Hindi for "selection") is a full-stack web app. You upload a PDF resume and paste a job description, and it shows how well they match: a match score, an ATS score with a breakdown, the skills you are missing, and prioritized tips to improve. Every analysis is saved in a history dashboard.
 
 ## Screenshots
@@ -40,7 +42,7 @@ Many resumes are rejected by an Applicant Tracking System (ATS) before a human r
 |---|---|
 | Frontend | React, Vite, Tailwind CSS (CDN build), Recharts |
 | Backend | Python, Django, Django REST Framework, SimpleJWT, drf-spectacular (Swagger) |
-| Database | SQLite for local use, MySQL supported through environment variables |
+| Database | SQLite for local use, PostgreSQL in production, MySQL also supported,   MySQL supported through environment variables |
 | NLP and parsing | pdfplumber, scikit-learn |
 | Tools | Git, GitHub, Postman |
 
@@ -116,8 +118,9 @@ Open http://localhost:5173, create an account, upload a text-based PDF resume, p
 |---|---|
 | `SECRET_KEY` | Django secret key |
 | `DEBUG` | `1` for local development |
-| `DB_ENGINE` | `sqlite` (default) or `mysql` |
+| `DB_ENGINE` | `sqlite` (default), `mysql` or `postgres` |
 | `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` | MySQL settings, used only when `DB_ENGINE=mysql` |
+| `DATABASE_URL` | Postgres connection string, used only when `DB_ENGINE=postgres` |
 | `CORS_ORIGINS` | Allowed frontend origin, for example `http://localhost:5173` |
 | `FRONTEND_URL` | Base link used inside emails |
 | `OWNER_EMAIL`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `NTFY_TOPIC`, `NOTIFY_LOGIN` | Optional email and phone alerts. Without them, emails are printed in the backend terminal |
